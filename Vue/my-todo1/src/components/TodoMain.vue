@@ -51,8 +51,7 @@ export default {
                 state: tempstate
             });
             this.addItemText = '';
-            console.log(this.todos);
-        }
+        },
     },
 }
 </script>
