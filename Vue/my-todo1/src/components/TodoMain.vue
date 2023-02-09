@@ -8,7 +8,7 @@
                     <input type="text"/>
                     <button class="btn add">Add</button>
                 </div>
-                <!-- 할일 목록 리스팅 -->
+                <!-- 1. 할일 목록 리스팅 -->
                 <ul class="list">
                     <li v-for="(todo, i) of todos">
                         <i class="far fa-check-square"></i> <!-- far에서 fas로 되면 체크됨-->
