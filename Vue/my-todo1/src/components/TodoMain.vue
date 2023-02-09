@@ -5,13 +5,17 @@
         <main>
             <div class="todos">
                 <div class="write">
-                    <input type="text"/>
-                    <button class="btn add">Add</button>
+                    <input 
+                        type="text"
+                        v-model="addItemText"
+                        v-on:keyup.enter="addItem"
+                    />
+                    <button class="btn add" v-on:click="addItem">Add</button>
                 </div>
                 <!-- 1. 할일 목록 리스팅 -->
                 <ul class="list">
-                    <li v-for="(todo, i) of todos">
-                        <i class="far fa-check-square"></i> <!-- far에서 fas로 되면 체크됨-->
+                    <li v-for="(todo, i) of todos" :key="todo.text">
+                        <i :class="[todo.state === 'yet' ? 'far' : 'fas', 'fa-check-square']"></i>
                         <span>
                             {{ todo.text }}
                             <b>
@@ -30,11 +34,24 @@
 export default {
     data() {
         return {
+            addItemText: '',
             todos:[
                 {text: '공부하기', state: 'yet'},
                 {text: '운동하기', state: 'done'},
                 {text: '글쓰기', state: 'done'},
             ],
+        }
+    },
+    methods: {
+        addItem() {
+            const temptext = this.addItemText;
+            const tempstate = 'yet';
+            this.todos.push({
+                text: temptext,
+                state: tempstate
+            });
+            this.addItemText = '';
+            console.log(this.todos);
         }
     },
 }
