@@ -74,19 +74,29 @@ export default {
             //     text: temptext,
             //     state: tempstate
             // }); // db에 전송하기 전
-            db.collection('todos').add({text: temptext, state: tempstate});
+            db.collection('todos').add({
+                text: temptext, 
+                state: tempstate, 
+                createdAt: new Date(),
+                }).then(sn => {
+                db.collection('todos').doc(sn.id).update({
+                    id: sn.id
+                })
+            });
             this.addItemText = '';
         },
-        checkItem(event, i) {
-            if (this.todos[i].state == 'yet') {
-                event.target.classList.remove('yet');
-                event.target.classList.add('done');
-                this.todos[i].state = 'done';
+        checkItem(event, index) {
+            if (this.todos[index].state == 'yet') {
+                // event.target.classList.remove('yet');
+                // event.target.classList.add('done');
+                // this.todos[i].state = 'done'; firebase에 연동하기 전
+                db.collection('todos').doc(this.todos[index].id).update({state: 'done'});
             }
-            else if (this.todos[i].state == 'done') {
-                event.target.classList.remove('done');
-                event.target.classList.add('yet');
-                this.todos[i].state = 'yet';
+            else if (this.todos[index].state == 'done') {
+                // event.target.classList.remove('done');
+                // event.target.classList.add('yet');
+                // this.todos[i].state = 'yet'; firebase에 연동하기 전
+                db.collection('todos').doc(this.todos[index].id).update({state: 'yet'});
             }
 
         },
@@ -97,26 +107,26 @@ export default {
             this.$refs.list.children[index].classList = 'editing';
         },
         editSave() {
-            this.todos[this.crrEditItem].text = this.editItemText;
+            // this.todos[this.crrEditItem].text = this.editItemText;
+            db.collection('todos')
+                .doc(this.todos[this.crrEditItem].id)
+                    .update({
+                        text: this.editItemText
+                    });
             this.editItemText = '';
             this.writeState = 'add';
             this.$refs.list.children[this.crrEditItem].classList = '';
         },
         del(index) {
-            this.todos.splice(index, 1);
+            // this.todos.splice(index, 1); //DB에 접근해서 삭제하므로 의미없음
+            db.collection('todos').doc(this.todos[index].id).delete();
         },
     },
     mounted() {
         this.$refs.writeArea.focus();
-        db.collection('todos').get().then((result) => {
-            result.forEach((doc)=>{
-                console.log(doc.data())
-                this.todos.push(doc.data());
-            })
-        });
     },
     firestore: {
-        todos: db.collection('todos')
+        todos: db.collection('todos').orderBy('createdAt', 'desc') // firebase에서 가져올 때 시간 순으로 정렬해서 가져오도록
     }
 }
 </script>
