@@ -1,7 +1,23 @@
 <template>
     <!-- 2.x는 하나의 div tag 안에 만들어야함 -->
     <div class="page">
-        <header><h1>Vue Fire todo1</h1></header>
+        <header>
+            <h1>
+                Vue Fire todo1
+                <span class="pie">
+                    <svg viewBox="0 0 64 64">
+                        <circle class="pie" r="32" cx="32" cy="32" style="stroke-width: 64;"></circle>
+                        <circle class="slice" r="32" cx="32" cy="32" 
+                        :style="{ 
+                            strokeWidth: 64,
+                            strokeDasharray: totalTodo + ', 201', 
+                            transition: 'all 0.3s linear'
+                        }"></circle>
+                    </svg>
+                </span>
+            </h1>
+        </header>
+
         <main>
             <div class="todos">
                 <transition name="fade">
@@ -62,6 +78,17 @@ export default {
                 // {text: '운동하기', state: 'done'},
                 // {text: '글쓰기', state: 'done'},
             ],
+        }
+    },
+    computed: {
+        // header의 svg파일 style 바인딩을 위한 computed 함수 (done의 개수에 따라 비율로 인해 css 적용이 달라짐)
+        totalTodo() {
+            let totalNum = 0;
+            this.todos.forEach(item => {
+                if (item.state == 'done')
+                    totalNum++;
+            });
+            return (totalNum / this.todos.length) * 201;
         }
     },
     methods: {
