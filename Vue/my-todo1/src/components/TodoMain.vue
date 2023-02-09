@@ -4,27 +4,29 @@
         <header><h1>Vue Fire todo1</h1></header>
         <main>
             <div class="todos">
-                <div class="write" v-if="writeState === 'add'"> <!-- 등록 -->
-                    <input
-                        ref="writeArea" 
-                        type="text"
-                        v-model="addItemText"
-                        v-on:keyup.enter="addItem"
-                    />
-                    <button class="btn add" v-on:click="addItem">Add</button>
-                </div>
+                <transition name="fade">
+                    <div class="write add" v-if="writeState === 'add'" key="add"> <!-- 등록 -->
+                        <input
+                            ref="writeArea" 
+                            type="text"
+                            v-model="addItemText"
+                            v-on:keyup.enter="addItem"
+                        />
+                        <button class="btn add" v-on:click="addItem">Add</button>
+                    </div>
 
-                <div class="write" v-else> <!-- 수정 -->
-                    <input
-                        ref="editArea" 
-                        type="text"
-                        v-model="editItemText"
-                        v-on:keyup.enter="editSave"
-                    />
-                    <button class="btn add" v-on:click="editSave">Save</button>
-                </div>
+                    <div class="write edit" v-else key="edit"> <!-- 수정 -->
+                        <input
+                            ref="editArea" 
+                            type="text"
+                            v-model="editItemText"
+                            v-on:keyup.enter="editSave"
+                        />
+                        <button class="btn add" v-on:click="editSave">Save</button>
+                    </div>
+                </transition>
 
-                <ul class="list">
+                <ul class="list" ref="list">
                     <li v-for="(todo, i) of todos" :key="todo.text">
                         <i 
                             @click="checkItem($event, i)"
@@ -45,6 +47,9 @@
 </template>
 
 <script>
+import {db} from '../firebase/db';
+console.log(db);
+
 export default {
     data() {
         return {
@@ -53,9 +58,9 @@ export default {
             crrEditItem: '',
             editItemText: '',
             todos:[
-                {text: '공부하기', state: 'yet'},
-                {text: '운동하기', state: 'done'},
-                {text: '글쓰기', state: 'done'},
+                // {text: '공부하기', state: 'yet'},
+                // {text: '운동하기', state: 'done'},
+                // {text: '글쓰기', state: 'done'},
             ],
         }
     },
@@ -65,10 +70,11 @@ export default {
             if (this.addItemText === '') return;
             
             const tempstate = 'yet';
-            this.todos.push({
-                text: temptext,
-                state: tempstate
-            });
+            // this.todos.push({
+            //     text: temptext,
+            //     state: tempstate
+            // }); // db에 전송하기 전
+            db.collection('todos').add({text: temptext, state: tempstate});
             this.addItemText = '';
         },
         checkItem(event, i) {
@@ -88,11 +94,13 @@ export default {
             this.crrEditItem = index;
             this.writeState = 'edit';
             this.editItemText = this.todos[index].text;
+            this.$refs.list.children[index].classList = 'editing';
         },
         editSave() {
             this.todos[this.crrEditItem].text = this.editItemText;
             this.editItemText = '';
             this.writeState = 'add';
+            this.$refs.list.children[this.crrEditItem].classList = '';
         },
         del(index) {
             this.todos.splice(index, 1);
@@ -100,6 +108,15 @@ export default {
     },
     mounted() {
         this.$refs.writeArea.focus();
+        db.collection('todos').get().then((result) => {
+            result.forEach((doc)=>{
+                console.log(doc.data())
+                this.todos.push(doc.data());
+            })
+        });
+    },
+    firestore: {
+        todos: db.collection('todos')
     }
 }
 </script>
