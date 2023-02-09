@@ -5,7 +5,8 @@
         <main>
             <div class="todos">
                 <div class="write">
-                    <input 
+                    <input
+                        ref="writeArea" 
                         type="text"
                         v-model="addItemText"
                         v-on:keyup.enter="addItem"
@@ -15,7 +16,10 @@
                 <!-- 1. 할일 목록 리스팅 -->
                 <ul class="list">
                     <li v-for="(todo, i) of todos" :key="todo.text">
-                        <i :class="[todo.state === 'yet' ? 'far' : 'fas', 'fa-check-square']"></i>
+                        <i 
+                            @click="checkItem($event, i)"
+                            :class="[todo.state === 'yet' ? 'far' : 'fas', 'fa-check-square']">
+                        </i>
                         <span>
                             {{ todo.text }}
                             <b>
@@ -45,6 +49,8 @@ export default {
     methods: {
         addItem() {
             const temptext = this.addItemText;
+            if (this.addItemText === '') return;
+            
             const tempstate = 'yet';
             this.todos.push({
                 text: temptext,
@@ -52,7 +58,23 @@ export default {
             });
             this.addItemText = '';
         },
+        checkItem(event, i) {
+            if (this.todos[i].state == 'yet') {
+                event.target.classList.remove('yet');
+                event.target.classList.add('done');
+                this.todos[i].state = 'done';
+            }
+            else if (this.todos[i].state == 'done') {
+                event.target.classList.remove('done');
+                event.target.classList.add('yet');
+                this.todos[i].state = 'yet';
+            }
+
+        },
     },
+    mounted() {
+        this.$refs.writeArea.focus();
+    }
 }
 </script>
 
