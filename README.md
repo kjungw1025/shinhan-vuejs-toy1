@@ -1,6 +1,6 @@
 # shinhan-vuejsi-toy1
 
-## firebase web hosting
+## Firebase web hosting
 ```shell
 firebase init
 
@@ -26,3 +26,7 @@ npm run build
 
 firebase deploy
 ```
+
+### Result URL
+https://my-todo1-4cd2c.web.app/
+
