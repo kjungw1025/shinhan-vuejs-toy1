@@ -28,7 +28,7 @@ firebase deploy
 ```
 
 ### Result URL
-<img src="https://user-images.githubusercontent.com/120318020/218028334-3932e0f7-f767-4679-9667-aebb37d35a00.png">
-
 https://my-todo1-4cd2c.web.app/
+
+<img src="https://user-images.githubusercontent.com/120318020/218028334-3932e0f7-f767-4679-9667-aebb37d35a00.png">
 
